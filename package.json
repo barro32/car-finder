@@ -1,0 +1,13 @@
+{
+  "name": "carfinder",
+  "version": "1.0.0",
+  "description": "Car finder is a web first app, which is also available on Android and iOS.",
+  "main": "index.ts",
+  "scripts": {},
+  "type": "module",
+  "dependencies": {
+    "next": "^15.4.6",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  }
+}
