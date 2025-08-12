@@ -3,7 +3,13 @@
   "version": "1.0.0",
   "description": "Car finder is a web first app, which is also available on Android and iOS.",
   "main": "index.ts",
-  "scripts": {},
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
   "type": "module",
   "dependencies": {
     "next": "^15.4.6",
