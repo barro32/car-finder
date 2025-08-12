@@ -30,6 +30,18 @@ const stolenCars = [
   },
 ];
 
+
 export async function GET() {
   return NextResponse.json({ cars: stolenCars });
+}
+
+export async function POST(req: Request) {
+  const data = await req.json();
+  const newCar = {
+    id: stolenCars.length + 1,
+    ...data,
+    reportedAt: new Date().toISOString(),
+  };
+  stolenCars.push(newCar);
+  return NextResponse.json({ car: newCar }, { status: 201 });
 }
