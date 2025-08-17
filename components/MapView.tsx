@@ -15,12 +15,20 @@ type Car = {
 
 const containerStyle = {
   width: '100%',
-  height: '500px',
+  height: '100%',
+  flex: 1,
+  minHeight: 0,
 };
 
 const center = { lat: 51.5074, lng: -0.1278 }; // London
 
-const MapView: React.FC = () => {
+
+type MapViewProps = {
+  onMapClick?: (location: { lat: number; lng: number }) => void;
+  selectedLocation?: { lat: number; lng: number } | null;
+};
+
+const MapView: React.FC<MapViewProps> = ({ onMapClick, selectedLocation }) => {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
   });
@@ -44,6 +52,12 @@ const MapView: React.FC = () => {
     },
   });
 
+  const handleMapClick = (e: google.maps.MapMouseEvent) => {
+    if (onMapClick && e.latLng) {
+      onMapClick({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+    }
+  };
+
   if (!isLoaded) {
     return <div>Loading map...</div>;
   }
@@ -55,7 +69,12 @@ const MapView: React.FC = () => {
   }
 
   return (
-    <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={13}>
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={center}
+      zoom={13}
+      onClick={handleMapClick}
+    >
       {data?.cars.map((car) => (
         <Marker
           key={car.id}
@@ -63,6 +82,15 @@ const MapView: React.FC = () => {
           label={car.licensePlate}
         />
       ))}
+      {selectedLocation && (
+        <Marker
+          position={selectedLocation}
+          label="New"
+          icon={{
+            url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+          }}
+        />
+      )}
     </GoogleMap>
   );
 };
