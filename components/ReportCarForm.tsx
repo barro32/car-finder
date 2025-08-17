@@ -2,7 +2,7 @@ type Location = { lat: number; lng: number } | null;
 
 import React, { useState } from 'react';
 
-export default function ReportCarForm({ selectedLocation, onLocationRequest }: { selectedLocation: Location, onLocationRequest: () => void }) {
+function ReportCarForm({ selectedLocation, onLocationRequest }: { selectedLocation: Location, onLocationRequest: () => void }) {
   const [form, setForm] = useState({
     make: '',
     model: '',
@@ -60,3 +60,5 @@ export default function ReportCarForm({ selectedLocation, onLocationRequest }: {
     </form>
   );
 }
+
+export default ReportCarForm;

@@ -28,7 +28,8 @@ type MapViewProps = {
   selectedLocation?: { lat: number; lng: number } | null;
 };
 
-const MapView: React.FC<MapViewProps> = ({ onMapClick, selectedLocation }) => {
+
+function MapView({ onMapClick, selectedLocation }: MapViewProps) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
   });
