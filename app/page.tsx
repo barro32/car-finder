@@ -12,6 +12,7 @@ export default function Home() {
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | null>(null);
   const [locationPermissionAsked, setLocationPermissionAsked] = useState(false);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [waitingForLocation, setWaitingForLocation] = useState(false);
 
   // Request current location on page load
   useEffect(() => {
@@ -47,9 +48,12 @@ export default function Home() {
 
   const handleLocationRequest = () => setLocationRequest(true);
   const handleMapClick = (location: { lat: number; lng: number }) => {
-    if (locationRequest) {
+    if (locationRequest || waitingForLocation) {
       setSelectedLocation(location);
       setLocationRequest(false);
+      setWaitingForLocation(false);
+      // Open modal after location is selected
+      setIsModalOpen(true);
     }
   };
 
@@ -57,18 +61,31 @@ export default function Home() {
     setSelectedLocation(location);
     setMapCenter(location); // This will center the map on current location
     setLocationRequest(false);
+    setWaitingForLocation(false);
+    // Open modal after current location is set
+    setIsModalOpen(true);
+  };
+
+  const startReportFlow = () => {
+    setWaitingForLocation(true);
+    setSelectedLocation(null); // Reset any previous selection
   };
 
   const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setWaitingForLocation(false);
+    setLocationRequest(false);
+  };
 
   return (
     <div style={{ position: 'relative', height: '100vh', width: '100vw' }}>
       {/* Full screen map */}
       <MapView 
         onMapClick={handleMapClick} 
-        selectedLocation={locationRequest ? selectedLocation : null}
+        selectedLocation={selectedLocation}
         center={mapCenter}
+        showLocationRequest={waitingForLocation}
       />
       
       {/* Floating header */}
@@ -112,11 +129,11 @@ export default function Home() {
           )}
         </div>
         <button 
-          onClick={openModal}
+          onClick={startReportFlow}
           style={{
             padding: '12px 24px',
             borderRadius: 8,
-            background: '#3182ce',
+            background: waitingForLocation ? '#48bb78' : '#3182ce',
             color: '#fff',
             border: 'none',
             fontWeight: 600,
@@ -125,10 +142,10 @@ export default function Home() {
             boxShadow: '0 2px 8px rgba(49, 130, 206, 0.3)',
             transition: 'all 0.2s'
           }}
-          onMouseOver={(e) => (e.target as HTMLButtonElement).style.background = '#2c5aa0'}
-          onMouseOut={(e) => (e.target as HTMLButtonElement).style.background = '#3182ce'}
+          onMouseOver={(e) => (e.target as HTMLButtonElement).style.background = waitingForLocation ? '#38a169' : '#2c5aa0'}
+          onMouseOut={(e) => (e.target as HTMLButtonElement).style.background = waitingForLocation ? '#48bb78' : '#3182ce'}
         >
-          Report Car
+          {waitingForLocation ? '📍 Click on Map' : 'Report Car'}
         </button>
       </header>
 
