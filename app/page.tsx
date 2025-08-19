@@ -13,6 +13,7 @@ export default function Home() {
   const [locationPermissionAsked, setLocationPermissionAsked] = useState(false);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [waitingForLocation, setWaitingForLocation] = useState(false);
+  const [showCenterMarker, setShowCenterMarker] = useState(false);
 
   // Request current location on page load
   useEffect(() => {
@@ -52,23 +53,72 @@ export default function Home() {
       setSelectedLocation(location);
       setLocationRequest(false);
       setWaitingForLocation(false);
-      // Open modal after location is selected
-      setIsModalOpen(true);
+      
+      // Add a small delay for smoother transition
+      setTimeout(() => {
+        // Recenter the map so the modal appears above the pin
+        // We'll offset the center slightly south so the pin area is visible below the modal
+        const offsetLocation = {
+          lat: location.lat - 0.004, // Move center slightly more south for better positioning
+          lng: location.lng
+        };
+        setMapCenter(offsetLocation);
+        
+        // Open modal after location is selected with another small delay
+        setTimeout(() => {
+          setIsModalOpen(true);
+        }, 300);
+      }, 100);
     }
   };
 
   const handleCurrentLocation = (location: { lat: number; lng: number }) => {
     setSelectedLocation(location);
-    setMapCenter(location); // This will center the map on current location
     setLocationRequest(false);
     setWaitingForLocation(false);
-    // Open modal after current location is set
-    setIsModalOpen(true);
+    
+    // Add a small delay for smoother transition
+    setTimeout(() => {
+      // Recenter the map so the modal appears above the pin
+      const offsetLocation = {
+        lat: location.lat - 0.004, // Move center slightly more south
+        lng: location.lng
+      };
+      setMapCenter(offsetLocation);
+      
+      // Open modal after current location is set with delay
+      setTimeout(() => {
+        setIsModalOpen(true);
+      }, 300);
+    }, 100);
   };
 
   const startReportFlow = () => {
-    setWaitingForLocation(true);
+    setShowCenterMarker(true);
+    setWaitingForLocation(false);
     setSelectedLocation(null); // Reset any previous selection
+  };
+
+  const handleCenterMarkerConfirm = (location: { lat: number; lng: number }) => {
+    setSelectedLocation(location);
+    setShowCenterMarker(false);
+    setWaitingForLocation(false);
+    setLocationRequest(false);
+    
+    // Add a small delay for smoother transition
+    setTimeout(() => {
+      // Recenter the map so the form appears above the location
+      const offsetLocation = {
+        lat: location.lat - 0.004,
+        lng: location.lng
+      };
+      setMapCenter(offsetLocation);
+      
+      // Open form after location is confirmed
+      setTimeout(() => {
+        setIsModalOpen(true);
+      }, 300);
+    }, 100);
   };
 
   const openModal = () => setIsModalOpen(true);
@@ -76,6 +126,7 @@ export default function Home() {
     setIsModalOpen(false);
     setWaitingForLocation(false);
     setLocationRequest(false);
+    setShowCenterMarker(false);
   };
 
   return (
@@ -86,6 +137,11 @@ export default function Home() {
         selectedLocation={selectedLocation}
         center={mapCenter}
         showLocationRequest={waitingForLocation}
+        showFormMarker={isModalOpen}
+        onCurrentLocation={handleCurrentLocation}
+        onCloseForm={closeModal}
+        showCenterMarker={showCenterMarker}
+        onCenterMarkerConfirm={handleCenterMarkerConfirm}
       />
       
       {/* Floating header */}
@@ -133,7 +189,7 @@ export default function Home() {
           style={{
             padding: '12px 24px',
             borderRadius: 8,
-            background: waitingForLocation ? '#48bb78' : '#3182ce',
+            background: showCenterMarker ? '#48bb78' : '#3182ce',
             color: '#fff',
             border: 'none',
             fontWeight: 600,
@@ -142,74 +198,12 @@ export default function Home() {
             boxShadow: '0 2px 8px rgba(49, 130, 206, 0.3)',
             transition: 'all 0.2s'
           }}
-          onMouseOver={(e) => (e.target as HTMLButtonElement).style.background = waitingForLocation ? '#38a169' : '#2c5aa0'}
-          onMouseOut={(e) => (e.target as HTMLButtonElement).style.background = waitingForLocation ? '#48bb78' : '#3182ce'}
+          onMouseOver={(e) => (e.target as HTMLButtonElement).style.background = showCenterMarker ? '#38a169' : '#2c5aa0'}
+          onMouseOut={(e) => (e.target as HTMLButtonElement).style.background = showCenterMarker ? '#48bb78' : '#3182ce'}
         >
-          {waitingForLocation ? '📍 Click on Map' : 'Report Car'}
+          {showCenterMarker ? '📍 Position Pin' : 'Report Car'}
         </button>
       </header>
-
-      {/* Modal overlay */}
-      {isModalOpen && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          zIndex: 2000,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '2rem'
-        }}>
-          <div style={{
-            background: '#fff',
-            borderRadius: 16,
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
-            padding: '2rem',
-            maxWidth: 500,
-            width: '100%',
-            maxHeight: '80vh',
-            overflow: 'auto',
-            position: 'relative'
-          }}>
-            {/* Close button */}
-            <button
-              onClick={closeModal}
-              style={{
-                position: 'absolute',
-                top: '1rem',
-                right: '1rem',
-                background: 'none',
-                border: 'none',
-                fontSize: '1.5rem',
-                cursor: 'pointer',
-                color: '#718096',
-                padding: '0.5rem',
-                borderRadius: '50%',
-                width: '2.5rem',
-                height: '2.5rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-              onMouseOver={(e) => (e.target as HTMLButtonElement).style.background = '#f7fafc'}
-              onMouseOut={(e) => (e.target as HTMLButtonElement).style.background = 'none'}
-            >
-              ×
-            </button>
-            
-            <ReportCarForm 
-              selectedLocation={selectedLocation} 
-              onLocationRequest={handleLocationRequest}
-              onCurrentLocation={handleCurrentLocation}
-              onClose={closeModal}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
