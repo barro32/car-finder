@@ -2,7 +2,11 @@ type Location = { lat: number; lng: number } | null;
 
 import React, { useState } from 'react';
 
-function ReportCarForm({ selectedLocation, onLocationRequest }: { selectedLocation: Location, onLocationRequest: () => void }) {
+function ReportCarForm({ selectedLocation, onLocationRequest, onClose }: { 
+  selectedLocation: Location, 
+  onLocationRequest: () => void,
+  onClose?: () => void 
+}) {
   const [form, setForm] = useState({
     make: '',
     model: '',
@@ -34,8 +38,14 @@ function ReportCarForm({ selectedLocation, onLocationRequest }: { selectedLocati
       }),
     });
     if (res.ok) {
-      setStatus('Car reported!');
+      setStatus('Car reported successfully!');
       setForm({ make: '', model: '', color: '', licensePlate: '' });
+      // Close modal after successful submission if onClose is provided
+      if (onClose) {
+        setTimeout(() => {
+          onClose();
+        }, 1500);
+      }
     } else {
       setStatus('Failed to report car.');
     }
