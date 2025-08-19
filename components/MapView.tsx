@@ -1,10 +1,10 @@
 "use client";
 import React, { useRef, useEffect, useState } from 'react';
 import { GoogleMap, Marker, useJsApiLoader, InfoWindow } from '@react-google-maps/api';
-import { useQuery } from '@tanstack/react-query';
 import ReportCarForm from './ReportCarForm';
 import { Car } from '../types/car';
 import { DEFAULT_MAP_CENTER, MAP_STYLES } from '../utils/constants';
+import { useCars } from '../hooks/useCars';
 
 const containerStyle = MAP_STYLES.containerStyle;
 const center = DEFAULT_MAP_CENTER;
@@ -71,24 +71,7 @@ function MapView({
     }
   }, [showCenterMarker]);
 
-  const { data, error, isLoading } = useQuery<{ cars: Car[] }, Error>({
-    queryKey: ['cars'],
-    queryFn: async () => {
-      const res = await fetch('/api/cars');
-      if (!res.ok) {
-        const text = await res.text();
-        console.error('API error:', res.status, text);
-        throw new Error(`API error: ${res.status}`);
-      }
-      try {
-        return await res.json();
-      } catch (err) {
-        const text = await res.text();
-        console.error('JSON parse error. Response text:', text);
-        throw err;
-      }
-    },
-  });
+  const { data, error, isLoading } = useCars();
 
   const handleMapLoad = (map: google.maps.Map) => {
     mapRef.current = map;
@@ -133,7 +116,7 @@ function MapView({
         zoom={propCenter ? 15 : 13}
         onLoad={handleMapLoad}
       >
-        {data?.cars.map((car) => (
+        {data?.cars.map((car: Car) => (
           <Marker
             key={car.id}
             position={car.location}

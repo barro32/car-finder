@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { Location } from '../types/car';
+import { useSubmitCar } from '../hooks/useSubmitCar';
+import { useToast } from '../hooks/useToast';
+import Toast from './Toast';
 
 function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMarker }: { 
   selectedLocation: Location, 
@@ -15,6 +18,9 @@ function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMa
   });
   const [status, setStatus] = useState<string | null>(null);
   const [gettingLocation, setGettingLocation] = useState(false);
+
+  const submitCarMutation = useSubmitCar();
+  const { toasts, showSuccess, showError, removeToast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -69,37 +75,52 @@ function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMa
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus(null);
+    
     if (!selectedLocation) {
       setStatus('Please select a location on the map.');
       return;
     }
-    const res = await fetch('/api/cars', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+
+    try {
+      await submitCarMutation.mutateAsync({
         make: form.make,
         model: form.model,
         color: form.color,
         licensePlate: form.licensePlate,
         location: selectedLocation,
-      }),
-    });
-    if (res.ok) {
+      });
+
       setStatus('Car reported successfully!');
+      showSuccess('Car reported and added to map! 🚗');
       setForm({ make: '', model: '', color: '', licensePlate: '' });
-      // Close modal after successful submission if onClose is provided
+      
+      // Close modal after successful submission
       if (onClose) {
         setTimeout(() => {
           onClose();
         }, 1500);
       }
-    } else {
-      setStatus('Failed to report car.');
+    } catch (error) {
+      console.error('Error submitting car:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      setStatus(`Failed to report car: ${errorMessage}`);
+      showError(`Failed to report car: ${errorMessage}`);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ 
+    <>
+      {/* Toast notifications */}
+      {toasts.map(toast => (
+        <Toast
+          key={toast.id}
+          message={toast.message}
+          type={toast.type}
+          onClose={() => removeToast(toast.id)}
+        />
+      ))}
+
+      <form onSubmit={handleSubmit} style={{ 
       display: 'flex', 
       flexDirection: 'column', 
       gap: 12,
@@ -186,9 +207,46 @@ function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMa
         </div>
       )}
       
-      <button type="submit" style={{ marginTop: 12, padding: '10px 0', borderRadius: 6, background: '#3182ce', color: '#fff', border: 'none', fontWeight: 600, fontSize: '1rem', cursor: 'pointer', transition: 'background 0.2s' }}>Report</button>
+      <button 
+        type="submit" 
+        disabled={submitCarMutation.isPending}
+        style={{ 
+          marginTop: 12, 
+          padding: '10px 0', 
+          borderRadius: 6, 
+          background: submitCarMutation.isPending ? '#cbd5e0' : '#3182ce', 
+          color: '#fff', 
+          border: 'none', 
+          fontWeight: 600, 
+          fontSize: '1rem', 
+          cursor: submitCarMutation.isPending ? 'not-allowed' : 'pointer', 
+          transition: 'background 0.2s',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px'
+        }}
+      >
+        {submitCarMutation.isPending ? (
+          <>
+            <span style={{ 
+              display: 'inline-block',
+              width: '16px',
+              height: '16px',
+              border: '2px solid #fff',
+              borderTop: '2px solid transparent',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite'
+            }} />
+            Submitting...
+          </>
+        ) : (
+          'Report'
+        )}
+      </button>
       {status && <div style={{ marginTop: 8, color: status.includes('success') ? 'green' : 'red', fontSize: '0.9rem', textAlign: 'center' }}>{status}</div>}
     </form>
+    </>
   );
 }
 
