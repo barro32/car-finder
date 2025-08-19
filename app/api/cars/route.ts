@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
+import { promises as fs } from 'fs';
+import path from 'path';
 
-const stolenCars = [
+const DATA_FILE = path.join(process.cwd(), 'data', 'cars.json');
+
+// Default data for when the file doesn't exist
+const defaultCars = [
   {
     id: 1,
     make: 'Toyota',
@@ -30,18 +35,71 @@ const stolenCars = [
   },
 ];
 
+// Helper function to read cars from file
+async function readCars() {
+  try {
+    // Ensure the data directory exists
+    const dataDir = path.dirname(DATA_FILE);
+    await fs.mkdir(dataDir, { recursive: true });
+
+    // Try to read the file
+    const data = await fs.readFile(DATA_FILE, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    // If file doesn't exist or is corrupted, return default data
+    console.log('Creating new cars.json file with default data');
+    await saveCars(defaultCars);
+    return defaultCars;
+  }
+}
+
+// Helper function to save cars to file
+async function saveCars(cars: any[]) {
+  try {
+    // Ensure the data directory exists
+    const dataDir = path.dirname(DATA_FILE);
+    await fs.mkdir(dataDir, { recursive: true });
+
+    // Write the data to file
+    await fs.writeFile(DATA_FILE, JSON.stringify(cars, null, 2), 'utf8');
+  } catch (error) {
+    console.error('Error saving cars data:', error);
+    throw error;
+  }
+}
+
 
 export async function GET() {
-  return NextResponse.json({ cars: stolenCars });
+  try {
+    const cars = await readCars();
+    return NextResponse.json({ cars });
+  } catch (error) {
+    console.error('Error reading cars:', error);
+    return NextResponse.json({ error: 'Failed to read cars data' }, { status: 500 });
+  }
 }
 
 export async function POST(req: Request) {
-  const data = await req.json();
-  const newCar = {
-    id: stolenCars.length + 1,
-    ...data,
-    reportedAt: new Date().toISOString(),
-  };
-  stolenCars.push(newCar);
-  return NextResponse.json({ car: newCar }, { status: 201 });
+  try {
+    const data = await req.json();
+    const cars = await readCars();
+
+    // Generate new ID based on existing cars
+    const maxId = cars.length > 0 ? Math.max(...cars.map((car: any) => car.id)) : 0;
+
+    const newCar = {
+      id: maxId + 1,
+      ...data,
+      reportedAt: new Date().toISOString(),
+    };
+
+    cars.push(newCar);
+    await saveCars(cars);
+
+    console.log('New car saved:', newCar);
+    return NextResponse.json({ car: newCar }, { status: 201 });
+  } catch (error) {
+    console.error('Error saving car:', error);
+    return NextResponse.json({ error: 'Failed to save car data' }, { status: 500 });
+  }
 }
