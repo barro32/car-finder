@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { useQuery } from '@tanstack/react-query';
 
@@ -31,9 +31,19 @@ type MapViewProps = {
 
 
 function MapView({ onMapClick, selectedLocation, center: propCenter }: MapViewProps) {
+  const mapRef = useRef<google.maps.Map | null>(null);
+  
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
   });
+
+  // Center the map when propCenter changes
+  useEffect(() => {
+    if (mapRef.current && propCenter) {
+      mapRef.current.panTo(propCenter);
+      mapRef.current.setZoom(15); // Zoom in when centering on current location
+    }
+  }, [propCenter]);
 
   const { data, error, isLoading } = useQuery<{ cars: Car[] }, Error>({
     queryKey: ['cars'],
@@ -60,22 +70,48 @@ function MapView({ onMapClick, selectedLocation, center: propCenter }: MapViewPr
     }
   };
 
+  const handleMapLoad = (map: google.maps.Map) => {
+    mapRef.current = map;
+  };
+
   if (!isLoaded) {
-    return <div>Loading map...</div>;
+    return <div style={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      height: '100%', 
+      fontSize: '1.2rem', 
+      color: '#666' 
+    }}>Loading map...</div>;
   }
   if (isLoading) {
-    return <div>Loading cars...</div>;
+    return <div style={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      height: '100%', 
+      fontSize: '1.2rem', 
+      color: '#666' 
+    }}>Loading cars...</div>;
   }
   if (error) {
-    return <div>Error loading cars: {error.message}</div>;
+    return <div style={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      height: '100%', 
+      fontSize: '1.2rem', 
+      color: '#e53e3e' 
+    }}>Error loading cars: {error.message}</div>;
   }
 
   return (
     <GoogleMap
       mapContainerStyle={containerStyle}
       center={propCenter || center}
-      zoom={13}
+      zoom={propCenter ? 15 : 13}
       onClick={handleMapClick}
+      onLoad={handleMapLoad}
     >
       {data?.cars.map((car) => (
         <Marker
