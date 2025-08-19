@@ -58,5 +58,17 @@
       "lng": -6.239976601437465
     },
     "reportedAt": "2025-08-19T22:37:00.075Z"
+  },
+  {
+    "id": 6,
+    "make": "bvc",
+    "model": "bvc",
+    "color": "bvc",
+    "licensePlate": "bgvcf",
+    "location": {
+      "lat": 53.33033403628668,
+      "lng": -6.2403718448289
+    },
+    "reportedAt": "2025-08-19T22:45:15.539Z"
   }
 ]
