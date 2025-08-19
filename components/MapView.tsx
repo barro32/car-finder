@@ -26,10 +26,11 @@ const center = { lat: 51.5074, lng: -0.1278 }; // London
 type MapViewProps = {
   onMapClick?: (location: { lat: number; lng: number }) => void;
   selectedLocation?: { lat: number; lng: number } | null;
+  center?: { lat: number; lng: number } | null;
 };
 
 
-function MapView({ onMapClick, selectedLocation }: MapViewProps) {
+function MapView({ onMapClick, selectedLocation, center: propCenter }: MapViewProps) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
   });
@@ -72,7 +73,7 @@ function MapView({ onMapClick, selectedLocation }: MapViewProps) {
   return (
     <GoogleMap
       mapContainerStyle={containerStyle}
-      center={center}
+      center={propCenter || center}
       zoom={13}
       onClick={handleMapClick}
     >
