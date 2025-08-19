@@ -2,11 +2,12 @@ type Location = { lat: number; lng: number } | null;
 
 import React, { useState } from 'react';
 
-function ReportCarForm({ selectedLocation, onLocationRequest, onCurrentLocation, onClose }: { 
+function ReportCarForm({ selectedLocation, onLocationRequest, onCurrentLocation, onClose, isInMapMarker }: { 
   selectedLocation: Location, 
   onLocationRequest: () => void,
   onCurrentLocation?: (location: { lat: number; lng: number }) => void,
-  onClose?: () => void 
+  onClose?: () => void,
+  isInMapMarker?: boolean
 }) {
   const [form, setForm] = useState({
     make: '',
@@ -100,8 +101,23 @@ function ReportCarForm({ selectedLocation, onLocationRequest, onCurrentLocation,
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <h2 style={{ margin: 0, marginBottom: 12, fontSize: '1.25rem', color: '#2d3748' }}>Report Stolen Car</h2>
+    <form onSubmit={handleSubmit} style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      gap: 12,
+      background: isInMapMarker ? '#fff' : 'transparent',
+      padding: isInMapMarker ? '1.5rem' : '0',
+      borderRadius: isInMapMarker ? '12px' : '0',
+      boxShadow: isInMapMarker ? '0 4px 20px rgba(0,0,0,0.1)' : 'none',
+      minWidth: isInMapMarker ? '350px' : 'auto'
+    }}>
+      <h2 style={{ 
+        margin: 0, 
+        marginBottom: 12, 
+        fontSize: isInMapMarker ? '1.1rem' : '1.25rem', 
+        color: '#2d3748',
+        textAlign: isInMapMarker ? 'center' : 'left'
+      }}>Report Stolen Car</h2>
       <div style={{ display: 'flex', gap: 12 }}>
         <input name="make" placeholder="Make" value={form.make} onChange={handleChange} required style={{ flex: 1, padding: 8, borderRadius: 6, border: '1px solid #e2e8f0' }} />
         <input name="model" placeholder="Model" value={form.model} onChange={handleChange} required style={{ flex: 1, padding: 8, borderRadius: 6, border: '1px solid #e2e8f0' }} />
@@ -111,64 +127,69 @@ function ReportCarForm({ selectedLocation, onLocationRequest, onCurrentLocation,
         <input name="licensePlate" placeholder="License Plate" value={form.licensePlate} onChange={handleChange} required style={{ flex: 1, padding: 8, borderRadius: 6, border: '1px solid #e2e8f0' }} />
       </div>
       
-      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-        <button 
-          type="button" 
-          onClick={handleCurrentLocation}
-          disabled={gettingLocation}
-          style={{ 
-            flex: 1,
-            padding: '10px 12px', 
-            borderRadius: 6, 
-            background: gettingLocation ? '#cbd5e0' : '#48bb78', 
-            color: '#fff', 
-            border: 'none', 
-            fontWeight: 500, 
-            fontSize: '0.9rem', 
-            cursor: gettingLocation ? 'not-allowed' : 'pointer',
-            transition: 'background 0.2s',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6
-          }}
-        >
-          {gettingLocation ? '📍 Getting...' : '📍 Use Current Location'}
-        </button>
-        <button 
-          type="button" 
-          onClick={onClose} 
-          style={{ 
-            flex: 1,
-            padding: '10px 12px', 
-            borderRadius: 6, 
-            background: '#e53e3e', 
-            color: '#fff', 
-            border: 'none', 
-            fontWeight: 500, 
-            fontSize: '0.9rem', 
-            cursor: 'pointer',
-            transition: 'background 0.2s'
-          }}
-        >
-          ✕ Choose Different Location
-        </button>
-      </div>
+      {!isInMapMarker && (
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          <button 
+            type="button" 
+            onClick={handleCurrentLocation}
+            disabled={gettingLocation}
+            style={{ 
+              flex: 1,
+              padding: '10px 12px', 
+              borderRadius: 6, 
+              background: gettingLocation ? '#cbd5e0' : '#48bb78', 
+              color: '#fff', 
+              border: 'none', 
+              fontWeight: 500, 
+              fontSize: '0.9rem', 
+              cursor: gettingLocation ? 'not-allowed' : 'pointer',
+              transition: 'background 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6
+            }}
+          >
+            {gettingLocation ? '📍 Getting...' : '📍 Use Current Location'}
+          </button>
+          <button 
+            type="button" 
+            onClick={onClose} 
+            style={{ 
+              flex: 1,
+              padding: '10px 12px', 
+              borderRadius: 6, 
+              background: '#e53e3e', 
+              color: '#fff', 
+              border: 'none', 
+              fontWeight: 500, 
+              fontSize: '0.9rem', 
+              cursor: 'pointer',
+              transition: 'background 0.2s'
+            }}
+          >
+            ✕ Choose Different Location
+          </button>
+        </div>
+      )}
       
-      {selectedLocation && (
+      {isInMapMarker && (
         <div style={{ 
           padding: '8px 12px', 
           borderRadius: 6, 
           background: '#f0fff4', 
           border: '1px solid #9ae6b4',
-          fontSize: '0.9rem',
-          color: '#2f855a'
+          fontSize: '0.85rem',
+          color: '#2f855a',
+          textAlign: 'center',
+          marginBottom: '8px'
         }}>
-          📍 Location set: {selectedLocation.lat.toFixed(5)}, {selectedLocation.lng.toFixed(5)}
+          📍 Location: {selectedLocation?.lat.toFixed(5)}, {selectedLocation?.lng.toFixed(5)}
         </div>
       )}
+      
       <button type="submit" style={{ marginTop: 12, padding: '10px 0', borderRadius: 6, background: '#3182ce', color: '#fff', border: 'none', fontWeight: 600, fontSize: '1rem', cursor: 'pointer', transition: 'background 0.2s' }}>Report</button>
-      {status && <div style={{ marginTop: 8, color: status === 'Car reported!' ? 'green' : 'red' }}>{status}</div>}
+      {status && <div style={{ marginTop: 8, color: status.includes('success') ? 'green' : 'red', fontSize: '0.9rem', textAlign: 'center' }}>{status}</div>}
     </form>
   );
 }
