@@ -2,9 +2,10 @@ type Location = { lat: number; lng: number } | null;
 
 import React, { useState } from 'react';
 
-function ReportCarForm({ selectedLocation, onLocationRequest, onClose }: { 
+function ReportCarForm({ selectedLocation, onLocationRequest, onCurrentLocation, onClose }: { 
   selectedLocation: Location, 
   onLocationRequest: () => void,
+  onCurrentLocation?: (location: { lat: number; lng: number }) => void,
   onClose?: () => void 
 }) {
   const [form, setForm] = useState({
@@ -14,9 +15,56 @@ function ReportCarForm({ selectedLocation, onLocationRequest, onClose }: {
     licensePlate: '',
   });
   const [status, setStatus] = useState<string | null>(null);
+  const [gettingLocation, setGettingLocation] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setStatus('Geolocation is not supported by this browser.');
+      return;
+    }
+
+    setGettingLocation(true);
+    setStatus('Getting your current location...');
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const location = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        if (onCurrentLocation) {
+          onCurrentLocation(location);
+        }
+        setGettingLocation(false);
+        setStatus('Current location set! You can adjust it by clicking on the map if needed.');
+      },
+      (error) => {
+        setGettingLocation(false);
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setStatus('Location access denied. Please enable location permissions.');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            setStatus('Location information is unavailable.');
+            break;
+          case error.TIMEOUT:
+            setStatus('Location request timed out.');
+            break;
+          default:
+            setStatus('An unknown error occurred while getting location.');
+            break;
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      }
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -62,9 +110,63 @@ function ReportCarForm({ selectedLocation, onLocationRequest, onClose }: {
         <input name="color" placeholder="Color" value={form.color} onChange={handleChange} required style={{ flex: 1, padding: 8, borderRadius: 6, border: '1px solid #e2e8f0' }} />
         <input name="licensePlate" placeholder="License Plate" value={form.licensePlate} onChange={handleChange} required style={{ flex: 1, padding: 8, borderRadius: 6, border: '1px solid #e2e8f0' }} />
       </div>
-      <button type="button" onClick={onLocationRequest} style={{ marginTop: 0, marginBottom: 0, padding: '8px 0', borderRadius: 6, background: '#e2e8f0', color: '#2d3748', border: 'none', fontWeight: 500, fontSize: '1rem', cursor: 'pointer' }}>
-        {selectedLocation ? `Location: (${selectedLocation.lat.toFixed(5)}, ${selectedLocation.lng.toFixed(5)})` : 'Select location on map'}
-      </button>
+      
+      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+        <button 
+          type="button" 
+          onClick={handleCurrentLocation}
+          disabled={gettingLocation}
+          style={{ 
+            flex: 1,
+            padding: '10px 12px', 
+            borderRadius: 6, 
+            background: gettingLocation ? '#cbd5e0' : '#48bb78', 
+            color: '#fff', 
+            border: 'none', 
+            fontWeight: 500, 
+            fontSize: '0.9rem', 
+            cursor: gettingLocation ? 'not-allowed' : 'pointer',
+            transition: 'background 0.2s',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6
+          }}
+        >
+          {gettingLocation ? '📍 Getting...' : '📍 Use Current Location'}
+        </button>
+        <button 
+          type="button" 
+          onClick={onLocationRequest} 
+          style={{ 
+            flex: 1,
+            padding: '10px 12px', 
+            borderRadius: 6, 
+            background: '#4299e1', 
+            color: '#fff', 
+            border: 'none', 
+            fontWeight: 500, 
+            fontSize: '0.9rem', 
+            cursor: 'pointer',
+            transition: 'background 0.2s'
+          }}
+        >
+          📍 Select on Map
+        </button>
+      </div>
+      
+      {selectedLocation && (
+        <div style={{ 
+          padding: '8px 12px', 
+          borderRadius: 6, 
+          background: '#f0fff4', 
+          border: '1px solid #9ae6b4',
+          fontSize: '0.9rem',
+          color: '#2f855a'
+        }}>
+          📍 Location set: {selectedLocation.lat.toFixed(5)}, {selectedLocation.lng.toFixed(5)}
+        </div>
+      )}
       <button type="submit" style={{ marginTop: 12, padding: '10px 0', borderRadius: 6, background: '#3182ce', color: '#fff', border: 'none', fontWeight: 600, fontSize: '1rem', cursor: 'pointer', transition: 'background 0.2s' }}>Report</button>
       {status && <div style={{ marginTop: 8, color: status === 'Car reported!' ? 'green' : 'red' }}>{status}</div>}
     </form>

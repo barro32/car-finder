@@ -9,6 +9,7 @@ export default function Home() {
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locationRequest, setLocationRequest] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | null>(null);
 
   const handleLocationRequest = () => setLocationRequest(true);
   const handleMapClick = (location: { lat: number; lng: number }) => {
@@ -18,13 +19,23 @@ export default function Home() {
     }
   };
 
+  const handleCurrentLocation = (location: { lat: number; lng: number }) => {
+    setSelectedLocation(location);
+    setMapCenter(location); // This will center the map on current location
+    setLocationRequest(false);
+  };
+
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
   return (
     <div style={{ position: 'relative', height: '100vh', width: '100vw' }}>
       {/* Full screen map */}
-      <MapView onMapClick={handleMapClick} selectedLocation={locationRequest ? selectedLocation : null} />
+      <MapView 
+        onMapClick={handleMapClick} 
+        selectedLocation={locationRequest ? selectedLocation : null}
+        center={mapCenter}
+      />
       
       {/* Floating header */}
       <header style={{ 
@@ -118,6 +129,7 @@ export default function Home() {
             <ReportCarForm 
               selectedLocation={selectedLocation} 
               onLocationRequest={handleLocationRequest}
+              onCurrentLocation={handleCurrentLocation}
               onClose={closeModal}
             />
           </div>
