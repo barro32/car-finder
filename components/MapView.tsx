@@ -3,32 +3,16 @@ import React, { useRef, useEffect, useState } from 'react';
 import { GoogleMap, Marker, useJsApiLoader, InfoWindow } from '@react-google-maps/api';
 import { useQuery } from '@tanstack/react-query';
 import ReportCarForm from './ReportCarForm';
+import { Car } from '../types/car';
+import { DEFAULT_MAP_CENTER, MAP_STYLES } from '../utils/constants';
 
-type Car = {
-  id: number;
-  make: string;
-  model: string;
-  color: string;
-  licensePlate: string;
-  location: { lat: number; lng: number };
-  reportedAt: string;
-};
-
-const containerStyle = {
-  width: '100%',
-  height: '100%',
-  flex: 1,
-  minHeight: 0,
-};
-
-const center = { lat: 51.5074, lng: -0.1278 }; // London
+const containerStyle = MAP_STYLES.containerStyle;
+const center = DEFAULT_MAP_CENTER;
 
 
 type MapViewProps = {
-  onMapClick?: (location: { lat: number; lng: number }) => void;
   selectedLocation?: { lat: number; lng: number } | null;
   center?: { lat: number; lng: number } | null;
-  showLocationRequest?: boolean;
   showFormMarker?: boolean;
   onCurrentLocation?: (location: { lat: number; lng: number }) => void;
   onCloseForm?: () => void;
@@ -38,10 +22,8 @@ type MapViewProps = {
 
 
 function MapView({ 
-  onMapClick, 
   selectedLocation, 
   center: propCenter, 
-  showLocationRequest,
   showFormMarker,
   onCurrentLocation,
   onCloseForm,
@@ -108,12 +90,6 @@ function MapView({
     },
   });
 
-  const handleMapClick = (e: google.maps.MapMouseEvent) => {
-    if (onMapClick && e.latLng) {
-      onMapClick({ lat: e.latLng.lat(), lng: e.latLng.lng() });
-    }
-  };
-
   const handleMapLoad = (map: google.maps.Map) => {
     mapRef.current = map;
   };
@@ -155,7 +131,6 @@ function MapView({
         mapContainerStyle={containerStyle}
         center={propCenter || center}
         zoom={propCenter ? 15 : 13}
-        onClick={handleMapClick}
         onLoad={handleMapLoad}
       >
         {data?.cars.map((car) => (
@@ -186,7 +161,6 @@ function MapView({
             }}>
               <ReportCarForm 
                 selectedLocation={selectedLocation} 
-                onLocationRequest={() => {}} // Not needed in this context
                 onCurrentLocation={onCurrentLocation}
                 onClose={onCloseForm}
                 isInMapMarker={true}
@@ -196,35 +170,6 @@ function MapView({
         )}
       </GoogleMap>
       
-      {/* Location selection overlay */}
-      {showLocationRequest && !showCenterMarker && (
-        <div style={{
-          position: 'absolute',
-          top: '120px', // Position below the header
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 500,
-          pointerEvents: 'none'
-        }}>
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: 12,
-            padding: '1.5rem 2rem',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
-            textAlign: 'center',
-            maxWidth: 300,
-            border: '2px solid #48bb78'
-          }}>
-            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📍</div>
-            <h3 style={{ margin: 0, marginBottom: '0.5rem', color: '#1a202c' }}>Select Car Location</h3>
-            <p style={{ margin: 0, color: '#4a5568', fontSize: '0.9rem' }}>
-              Click anywhere on the map to mark where the car was seen
-            </p>
-          </div>
-        </div>
-      )}
-
       {/* Center marker overlay */}
       {showCenterMarker && (
         <>

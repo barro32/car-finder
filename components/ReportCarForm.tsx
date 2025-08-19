@@ -1,10 +1,8 @@
-type Location = { lat: number; lng: number } | null;
-
 import React, { useState } from 'react';
+import { Location } from '../types/car';
 
-function ReportCarForm({ selectedLocation, onLocationRequest, onCurrentLocation, onClose, isInMapMarker }: { 
+function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMarker }: { 
   selectedLocation: Location, 
-  onLocationRequest: () => void,
   onCurrentLocation?: (location: { lat: number; lng: number }) => void,
   onClose?: () => void,
   isInMapMarker?: boolean

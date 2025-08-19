@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "make": "Toyota",
+    "model": "Corolla",
+    "color": "Red",
+    "licensePlate": "ABC123",
+    "location": {
+      "lat": 51.5074,
+      "lng": -0.1278
+    },
+    "reportedAt": "2025-08-10T14:30:00Z"
+  },
+  {
+    "id": 2,
+    "make": "Honda",
+    "model": "Civic",
+    "color": "Blue",
+    "licensePlate": "XYZ789",
+    "location": {
+      "lat": 51.509,
+      "lng": -0.08
+    },
+    "reportedAt": "2025-08-11T09:15:00Z"
+  },
+  {
+    "id": 3,
+    "make": "Ford",
+    "model": "Focus",
+    "color": "Black",
+    "licensePlate": "LMN456",
+    "location": {
+      "lat": 51.5033,
+      "lng": -0.1195
+    },
+    "reportedAt": "2025-08-12T08:00:00Z"
+  },
+  {
+    "id": 4,
+    "make": "Tesla",
+    "model": "3",
+    "color": "Grey",
+    "licensePlate": "211D1234",
+    "location": {
+      "lat": 53.32426034107723,
+      "lng": -6.236066364097264
+    },
+    "reportedAt": "2025-08-19T22:24:52.310Z"
+  },
+  {
+    "id": 5,
+    "make": "gfdg",
+    "model": "mhjnbmnb",
+    "color": "mnbnmb",
+    "licensePlate": "nbvnbv",
+    "location": {
+      "lat": 53.32641920239587,
+      "lng": -6.239976601437465
+    },
+    "reportedAt": "2025-08-19T22:37:00.075Z"
+  }
+]
