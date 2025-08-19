@@ -27,10 +27,11 @@ type MapViewProps = {
   onMapClick?: (location: { lat: number; lng: number }) => void;
   selectedLocation?: { lat: number; lng: number } | null;
   center?: { lat: number; lng: number } | null;
+  showLocationRequest?: boolean;
 };
 
 
-function MapView({ onMapClick, selectedLocation, center: propCenter }: MapViewProps) {
+function MapView({ onMapClick, selectedLocation, center: propCenter, showLocationRequest }: MapViewProps) {
   const mapRef = useRef<google.maps.Map | null>(null);
   
   const { isLoaded } = useJsApiLoader({
@@ -106,30 +107,65 @@ function MapView({ onMapClick, selectedLocation, center: propCenter }: MapViewPr
   }
 
   return (
-    <GoogleMap
-      mapContainerStyle={containerStyle}
-      center={propCenter || center}
-      zoom={propCenter ? 15 : 13}
-      onClick={handleMapClick}
-      onLoad={handleMapLoad}
-    >
-      {data?.cars.map((car) => (
-        <Marker
-          key={car.id}
-          position={car.location}
-          label={car.licensePlate}
-        />
-      ))}
-      {selectedLocation && (
-        <Marker
-          position={selectedLocation}
-          label="New"
-          icon={{
-            url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
-          }}
-        />
+    <div style={{ position: 'relative', height: '100%', width: '100%' }}>
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={propCenter || center}
+        zoom={propCenter ? 15 : 13}
+        onClick={handleMapClick}
+        onLoad={handleMapLoad}
+      >
+        {data?.cars.map((car) => (
+          <Marker
+            key={car.id}
+            position={car.location}
+            label={car.licensePlate}
+          />
+        ))}
+        {selectedLocation && (
+          <Marker
+            position={selectedLocation}
+            label="New"
+            icon={{
+              url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+            }}
+          />
+        )}
+      </GoogleMap>
+      
+      {/* Location selection overlay */}
+      {showLocationRequest && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          zIndex: 500,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          pointerEvents: 'none'
+        }}>
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(10px)',
+            borderRadius: 12,
+            padding: '1.5rem 2rem',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+            textAlign: 'center',
+            maxWidth: 300
+          }}>
+            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📍</div>
+            <h3 style={{ margin: 0, marginBottom: '0.5rem', color: '#1a202c' }}>Select Car Location</h3>
+            <p style={{ margin: 0, color: '#4a5568', fontSize: '0.9rem' }}>
+              Click anywhere on the map to mark where the car was seen
+            </p>
+          </div>
+        </div>
       )}
-    </GoogleMap>
+    </div>
   );
 };
 

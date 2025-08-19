@@ -137,12 +137,12 @@ function ReportCarForm({ selectedLocation, onLocationRequest, onCurrentLocation,
         </button>
         <button 
           type="button" 
-          onClick={onLocationRequest} 
+          onClick={onClose} 
           style={{ 
             flex: 1,
             padding: '10px 12px', 
             borderRadius: 6, 
-            background: '#4299e1', 
+            background: '#e53e3e', 
             color: '#fff', 
             border: 'none', 
             fontWeight: 500, 
@@ -151,7 +151,7 @@ function ReportCarForm({ selectedLocation, onLocationRequest, onCurrentLocation,
             transition: 'background 0.2s'
           }}
         >
-          📍 Select on Map
+          ✕ Choose Different Location
         </button>
       </div>
       
