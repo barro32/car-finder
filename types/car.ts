@@ -6,6 +6,7 @@ export type Car = {
   licensePlate: string;
   location: { lat: number; lng: number };
   reportedAt: string;
+  imageUrl?: string;
 };
 
 export type Location = { lat: number; lng: number } | null;

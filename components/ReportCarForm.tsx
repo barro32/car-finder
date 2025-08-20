@@ -18,6 +18,7 @@ function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMa
     model: '',
     color: '',
     licensePlate: '',
+    imageUrl: '',
   });
   const [status, setStatus] = useState<string | null>(null);
   const [gettingLocation, setGettingLocation] = useState(false);
@@ -121,11 +122,12 @@ function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMa
         color: form.color,
         licensePlate: form.licensePlate,
         location: selectedLocation,
+        imageUrl: form.imageUrl,
       });
 
       setStatus('Car reported successfully!');
       showSuccess('Car reported and added to map! 🚗');
-      setForm({ make: '', model: '', color: '', licensePlate: '' });
+      setForm({ make: '', model: '', color: '', licensePlate: '', imageUrl: '' });
       
       // Close modal after successful submission
       if (onClose) {
@@ -206,6 +208,14 @@ function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMa
             className={styles.input}
           />
         </div>
+
+        <input
+          name="imageUrl"
+          placeholder="Car Image URL (optional)"
+          value={form.imageUrl}
+          onChange={handleChange}
+          className={styles.input}
+        />
         
         {!isInMapMarker && (
           <div className={styles.buttonRow}>
