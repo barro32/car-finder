@@ -3,6 +3,8 @@ import { Location } from '../types/car';
 import { useSubmitCar } from '../hooks/useSubmitCar';
 import { useToast } from '../hooks/useToast';
 import Toast from './Toast';
+import Autocomplete from './Autocomplete';
+import { CarDataService } from '../services/carDataService';
 
 function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMarker }: { 
   selectedLocation: Location, 
@@ -18,12 +20,42 @@ function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMa
   });
   const [status, setStatus] = useState<string | null>(null);
   const [gettingLocation, setGettingLocation] = useState(false);
+  const [selectedMakeId, setSelectedMakeId] = useState<number | null>(null);
 
   const submitCarMutation = useSubmitCar();
   const { toasts, showSuccess, showError, removeToast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleMakeChange = (make: string) => {
+    setForm({ ...form, make, model: '' }); // Reset model when make changes
+    const makeData = CarDataService.getMakeByName(make);
+    setSelectedMakeId(makeData?.id || null);
+  };
+
+  const handleModelChange = (model: string) => {
+    setForm({ ...form, model });
+  };
+
+  const handleColorChange = (color: string) => {
+    setForm({ ...form, color });
+  };
+
+  const searchMakes = async (query: string): Promise<string[]> => {
+    const makes = await CarDataService.searchMakes(query);
+    return makes.map(make => make.name);
+  };
+
+  const searchModels = async (query: string): Promise<string[]> => {
+    if (!selectedMakeId) return [];
+    const models = await CarDataService.searchModels(selectedMakeId, query);
+    return models.map(model => model.name);
+  };
+
+  const searchColors = async (query: string): Promise<string[]> => {
+    return CarDataService.searchColors(query);
   };
 
   const handleCurrentLocation = () => {
@@ -123,12 +155,13 @@ function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMa
       <form onSubmit={handleSubmit} style={{ 
       display: 'flex', 
       flexDirection: 'column', 
-      gap: 12,
+      gap: 20, // Increased gap for autocomplete dropdowns
       background: isInMapMarker ? '#fff' : 'transparent',
       padding: isInMapMarker ? '1.5rem' : '0',
       borderRadius: isInMapMarker ? '12px' : '0',
       boxShadow: isInMapMarker ? '0 4px 20px rgba(0,0,0,0.1)' : 'none',
-      minWidth: isInMapMarker ? '350px' : 'auto'
+      minWidth: isInMapMarker ? '400px' : 'auto', // Increased width
+      position: 'relative'
     }}>
       <h2 style={{ 
         margin: 0, 
@@ -137,17 +170,68 @@ function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMa
         color: '#2d3748',
         textAlign: isInMapMarker ? 'center' : 'left'
       }}>Report Stolen Car</h2>
-      <div style={{ display: 'flex', gap: 12 }}>
-        <input name="make" placeholder="Make" value={form.make} onChange={handleChange} required style={{ flex: 1, padding: 8, borderRadius: 6, border: '1px solid #e2e8f0' }} />
-        <input name="model" placeholder="Model" value={form.model} onChange={handleChange} required style={{ flex: 1, padding: 8, borderRadius: 6, border: '1px solid #e2e8f0' }} />
+      
+      {/* Make field */}
+      <div style={{ position: 'relative', zIndex: 4 }}>
+        <Autocomplete
+          name="make"
+          placeholder="Car Make (e.g., Toyota, Honda, BMW)"
+          value={form.make}
+          onChange={handleMakeChange}
+          onSearch={searchMakes}
+          required
+        />
       </div>
-      <div style={{ display: 'flex', gap: 12 }}>
-        <input name="color" placeholder="Color" value={form.color} onChange={handleChange} required style={{ flex: 1, padding: 8, borderRadius: 6, border: '1px solid #e2e8f0' }} />
-        <input name="licensePlate" placeholder="License Plate" value={form.licensePlate} onChange={handleChange} required style={{ flex: 1, padding: 8, borderRadius: 6, border: '1px solid #e2e8f0' }} />
+
+      {/* Model field */}
+      <div style={{ position: 'relative', zIndex: 3 }}>
+        <Autocomplete
+          name="model"
+          placeholder={selectedMakeId ? "Model (e.g., Camry, Civic)" : "Select make first"}
+          value={form.model}
+          onChange={handleModelChange}
+          onSearch={searchModels}
+          required
+        />
+      </div>
+
+      {/* Color and License plate row */}
+      <div style={{ 
+        display: 'flex', 
+        gap: 12, 
+        position: 'relative', 
+        zIndex: 2,
+        flexDirection: isInMapMarker ? 'column' : 'row' // Stack vertically in modal for more space
+      }}>
+        <div style={{ flex: 1, position: 'relative' }}>
+          <Autocomplete
+            name="color"
+            placeholder="Color"
+            value={form.color}
+            onChange={handleColorChange}
+            onSearch={searchColors}
+            required
+          />
+        </div>
+        <input 
+          name="licensePlate" 
+          placeholder="License Plate" 
+          value={form.licensePlate} 
+          onChange={handleChange} 
+          required 
+          style={{ 
+            flex: 1, 
+            padding: 8, 
+            borderRadius: 6, 
+            border: '1px solid #e2e8f0',
+            fontSize: '1rem',
+            boxSizing: 'border-box'
+          }} 
+        />
       </div>
       
       {!isInMapMarker && (
-        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8, position: 'relative', zIndex: 1 }}>
           <button 
             type="button" 
             onClick={handleCurrentLocation}
@@ -211,8 +295,8 @@ function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMa
         type="submit" 
         disabled={submitCarMutation.isPending}
         style={{ 
-          marginTop: 12, 
-          padding: '10px 0', 
+          marginTop: 16, 
+          padding: '12px 0', 
           borderRadius: 6, 
           background: submitCarMutation.isPending ? '#cbd5e0' : '#3182ce', 
           color: '#fff', 
@@ -224,7 +308,9 @@ function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMa
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '8px'
+          gap: '8px',
+          position: 'relative',
+          zIndex: 1
         }}
       >
         {submitCarMutation.isPending ? (
