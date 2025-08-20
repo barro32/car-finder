@@ -7,6 +7,7 @@ interface SubmitCarData {
   color: string;
   licensePlate: string;
   location: { lat: number; lng: number };
+  imageUrl?: string;
 }
 
 export function useSubmitCar() {
