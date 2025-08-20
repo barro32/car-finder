@@ -70,5 +70,53 @@
       "lng": -6.2403718448289
     },
     "reportedAt": "2025-08-19T22:45:15.539Z"
+  },
+  {
+    "id": 7,
+    "make": "Tesla",
+    "model": "Model 3",
+    "color": "Gray",
+    "licensePlate": "211D1234",
+    "location": {
+      "lat": 53.32535051150573,
+      "lng": -6.241309490911657
+    },
+    "reportedAt": "2025-08-19T23:14:43.069Z"
+  },
+  {
+    "id": 8,
+    "make": "shmTesla",
+    "model": "Model 3",
+    "color": "Gray",
+    "licensePlate": "211D1234",
+    "location": {
+      "lat": 53.3,
+      "lng": -6.2
+    },
+    "reportedAt": "2025-08-19T23:14:43.069Z"
+  },
+  {
+    "id": 9,
+    "make": "Toyota",
+    "model": "Camry",
+    "color": "White",
+    "licensePlate": "sdfsdf",
+    "location": {
+      "lat": 53.32255731196252,
+      "lng": -6.239751680712519
+    },
+    "reportedAt": "2025-08-19T23:46:01.250Z"
+  },
+  {
+    "id": 10,
+    "make": "lotus",
+    "model": "elise",
+    "color": "Yellow",
+    "licensePlate": "05d1234",
+    "location": {
+      "lat": 53.3365860257113,
+      "lng": -6.25262204438803
+    },
+    "reportedAt": "2025-08-20T08:15:02.828Z"
   }
 ]
