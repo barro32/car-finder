@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import MapView from '../components/MapView';
 import Header from '../components/Header';
@@ -10,13 +10,14 @@ import { useCars } from '../hooks/useCars';
 import { getOffsetLocation } from '../utils/constants';
 import { Car } from '../types/car';
 
-export default function Home() {
+// Component that uses useSearchParams - needs to be wrapped in Suspense
+function HomeContent() {
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showCenterMarker, setShowCenterMarker] = useState(false);
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
   const [mapCenterOverride, setMapCenterOverride] = useState<{ lat: number; lng: number } | null>(null);
-  
+
   const { mapCenter: currentLocation, setMapCenter, isGettingLocation } = useCurrentLocation();
   const { data } = useCars();
   const searchParams = useSearchParams();
@@ -32,10 +33,10 @@ export default function Home() {
         const offsetLocation = getOffsetLocation(car.location);
         setMapCenterOverride(offsetLocation);
         console.log('Centering map on car:', car.id, 'at location:', offsetLocation);
-        
+
         // Also update the current location hook so it stays in sync
         setMapCenter(offsetLocation);
-        
+
         // Scroll to top to ensure map is visible
         window.scrollTo(0, 0);
       }
@@ -97,7 +98,7 @@ export default function Home() {
   return (
     <div style={{ position: 'relative', height: '100vh', width: '100vw' }}>
       {/* Full screen map */}
-      <MapView 
+      <MapView
         selectedLocation={selectedLocation}
         center={effectiveMapCenter}
         showFormMarker={isModalOpen}
@@ -107,14 +108,44 @@ export default function Home() {
         onCenterMarkerConfirm={handleCenterMarkerConfirm}
         selectedCar={selectedCar}
       />
-      
+
       {/* Floating header */}
-      <Header 
+      <Header
         isGettingLocation={isGettingLocation}
         mapCenter={effectiveMapCenter}
         showCenterMarker={showCenterMarker}
         onStartReportFlow={startReportFlow}
       />
     </div>
+  );
+}
+
+// Loading fallback for Suspense
+function HomeLoading() {
+  return (
+    <div style={{
+      position: 'relative',
+      height: '100vh',
+      width: '100vw',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'var(--bg-primary)',
+      color: 'var(--text-primary)'
+    }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🚗</div>
+        <div>Loading Car Finder...</div>
+      </div>
+    </div>
+  );
+}
+
+// Main export function with Suspense boundary
+export default function Home() {
+  return (
+    <Suspense fallback={<HomeLoading />}>
+      <HomeContent />
+    </Suspense>
   );
 }

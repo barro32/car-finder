@@ -32,6 +32,7 @@ function MapView({
   onCenterMarkerConfirm,
   selectedCar
 }: MapViewProps) {
+  const [selectedMarker, setSelectedMarker] = useState<Car | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | null>(null);
   
@@ -53,7 +54,12 @@ function MapView({
     }
   }, [propCenter]);
 
-  // Track map center changes when in center marker mode
+  // Handle selectedCar from props - auto-open InfoWindow
+  useEffect(() => {
+    if (selectedCar) {
+      setSelectedMarker(selectedCar);
+    }
+  }, [selectedCar]);
   useEffect(() => {
     if (mapRef.current && showCenterMarker) {
       const handleCenterChanged = () => {
@@ -124,30 +130,100 @@ function MapView({
         zoom={propCenter ? 15 : 13}
         onLoad={handleMapLoad}
       >
-        {data?.cars.map((car: Car) => (
-          <Marker
-            key={car.id}
-            position={car.location}
-            label={car.licensePlate}
-          />
+        {data?.cars
+          .filter((car: Car) => !selectedCar || car.id !== selectedCar.id)
+          .map((car: Car) => (
+          <div key={car.id}>
+            <Marker
+              position={car.location}
+              onClick={() => setSelectedMarker(car)}
+              icon={{
+                url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+                  <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="16" cy="16" r="15" fill="#3182ce" stroke="#ffffff" stroke-width="2"/>
+                    <rect x="8" y="12" width="16" height="8" rx="2" fill="#2c5aa0"/>
+                    <circle cx="12" cy="20" r="1.5" fill="#1a365d"/>
+                    <circle cx="20" cy="20" r="1.5" fill="#1a365d"/>
+                    <text x="16" y="10" text-anchor="middle" fill="#ffffff" font-family="Arial" font-size="8" font-weight="bold">${car.licensePlate.substring(0, 3).toUpperCase()}</text>
+                  </svg>
+                `)}`,
+                scaledSize: new google.maps.Size(32, 32),
+                anchor: new google.maps.Point(16, 32)
+              }}
+              options={{
+                optimized: false,
+                clickable: true,
+                zIndex: 1
+              }}
+              title={`${car.make} ${car.model} - ${car.licensePlate}`}
+            />
+          </div>
         ))}
+
+        {/* InfoWindow for selected marker */}
+        {selectedMarker && (
+          <InfoWindow
+            position={selectedMarker.location}
+            onCloseClick={() => setSelectedMarker(null)}
+            options={{
+              pixelOffset: new google.maps.Size(0, -10),
+              disableAutoPan: false,
+              maxWidth: 300
+            }}
+          >
+            <div className="car-info-window">
+              <button
+                onClick={() => setSelectedMarker(null)}
+                className="car-info-close-btn"
+                title="Close"
+              >
+                ×
+              </button>
+              <h4 className="car-info-title">
+                🚗 {selectedMarker.make} {selectedMarker.model}
+              </h4>
+              <div className="car-info-details">
+                <p className="car-info-item">
+                  <strong>📋 License Plate:</strong> {selectedMarker.licensePlate}
+                </p>
+                <p className="car-info-item">
+                  <strong>🎨 Color:</strong> {selectedMarker.color}
+                </p>
+                <p className="car-info-item">
+                  <strong>📅 Reported:</strong> {new Date(selectedMarker.reportedAt).toLocaleDateString()}
+                </p>
+                <p className="car-info-location">
+                  <strong>📍 Location:</strong> {selectedMarker.location.lat.toFixed(4)}, {selectedMarker.location.lng.toFixed(4)}
+                </p>
+              </div>
+            </div>
+          </InfoWindow>
+        )}
 
         {/* Selected car marker - highlighted */}
         {selectedCar && (
-          <Marker
-            position={selectedCar.location}
-            icon={{
-              url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-                <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="20" cy="20" r="18" fill="#ff4444" stroke="#ffffff" stroke-width="3"/>
-                  <text x="20" y="25" text-anchor="middle" fill="#ffffff" font-family="Arial" font-size="12" font-weight="bold">!</text>
-                </svg>
-              `),
-              scaledSize: new google.maps.Size(40, 40),
-              anchor: new google.maps.Point(20, 40)
-            }}
-            title={`${selectedCar.make} ${selectedCar.model} - ${selectedCar.licensePlate}`}
-          />
+          <div>
+            <Marker
+              position={selectedCar.location}
+              onClick={() => setSelectedMarker(selectedCar)}
+              icon={{
+                url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+                  <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="20" cy="20" r="18" fill="#ff4444" stroke="#ffffff" stroke-width="3"/>
+                    <text x="20" y="25" text-anchor="middle" fill="#ffffff" font-family="Arial" font-size="12" font-weight="bold">!</text>
+                  </svg>
+                `)}`,
+                scaledSize: new google.maps.Size(40, 40),
+                anchor: new google.maps.Point(20, 40)
+              }}
+              options={{
+                optimized: false,
+                clickable: true,
+                zIndex: 2
+              }}
+              title={`${selectedCar.make} ${selectedCar.model} - ${selectedCar.licensePlate}`}
+            />
+          </div>
         )}
         
         {/* Custom form marker */}
