@@ -2,6 +2,7 @@
 import React from 'react';
 import { InfoWindow } from '@react-google-maps/api';
 import { Car } from '../types/car';
+import styles from './CarInfoWindow.module.css';
 
 interface CarInfoWindowProps {
   car: Car;
@@ -19,28 +20,28 @@ export function CarInfoWindow({ car, onClose }: CarInfoWindowProps) {
         maxWidth: 300
       }}
     >
-      <div className="car-info-window">
+      <div className={styles.infoWindow}>
         <button
           onClick={onClose}
-          className="car-info-close-btn"
+          className={styles.closeBtn}
           title="Close"
         >
           ×
         </button>
-        <h4 className="car-info-title">
+        <h4 className={styles.title}>
           🚗 {car.make} {car.model}
         </h4>
-        <div className="car-info-details">
-          <p className="car-info-item">
+        <div className={styles.details}>
+          <p className={styles.item}>
             <strong>📋 License Plate:</strong> {car.licensePlate}
           </p>
-          <p className="car-info-item">
+          <p className={styles.item}>
             <strong>🎨 Color:</strong> {car.color}
           </p>
-          <p className="car-info-item">
+          <p className={styles.item}>
             <strong>📅 Reported:</strong> {new Date(car.reportedAt).toLocaleDateString()}
           </p>
-          <p className="car-info-location">
+          <p className={styles.location}>
             <strong>📍 Location:</strong> {car.location.lat.toFixed(4)}, {car.location.lng.toFixed(4)}
           </p>
         </div>

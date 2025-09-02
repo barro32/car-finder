@@ -10,6 +10,7 @@ import { CarInfoWindow } from './CarInfoWindow';
 import { FormMarker } from './FormMarker';
 import { CenterMarkerOverlay } from './CenterMarkerOverlay';
 import { MapLoading } from './MapLoading';
+import styles from './MapView.module.css';
 
 const containerStyle = MAP_STYLES.containerStyle;
 const center = DEFAULT_MAP_CENTER;
@@ -106,7 +107,7 @@ function MapView({
   }
 
   return (
-    <div style={{ position: 'relative', height: '100%', width: '100%' }}>
+    <div className={styles.container}>
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={propCenter || center}

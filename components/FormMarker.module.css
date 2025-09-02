@@ -1,0 +1,7 @@
+/* Form Marker styles */
+.container {
+  padding: 0;
+  margin: 0;
+  min-width: 400px;
+  max-width: 500px;
+}

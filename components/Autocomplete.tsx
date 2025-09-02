@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import styles from './Autocomplete.module.css';
 
 interface AutocompleteProps {
   name: string;
@@ -110,7 +111,7 @@ function Autocomplete({
   };
 
   return (
-    <div style={{ position: 'relative', width: '100%' }}>
+    <div className={styles.container}>
       <input
         ref={inputRef}
         name={name}
@@ -121,60 +122,19 @@ function Autocomplete({
         onFocus={handleFocus}
         onBlur={handleBlur}
         required={required}
-        style={{
-          width: '100%',
-          padding: 8,
-          borderRadius: 6,
-          border: `1px solid var(--border-color)`,
-          fontSize: '1rem',
-          boxSizing: 'border-box',
-          backgroundColor: 'var(--bg-secondary)',
-          color: 'var(--text-primary)',
-          transition: 'border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease',
-          ...style
-        }}
+        className={styles.input}
+        style={style}
         autoComplete="off"
       />
-      
+
       {showSuggestions && (
         <div
           ref={listRef}
-          style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            zIndex: 1000, // High z-index to ensure it's on top
-            background: 'var(--bg-secondary)',
-            border: `1px solid var(--border-color)`,
-            borderTop: 'none',
-            borderRadius: '0 0 6px 6px',
-            maxHeight: '200px',
-            overflowY: 'auto',
-            boxShadow: `0 4px 12px var(--shadow-color)`,
-            marginTop: '1px'
-          }}
+          className={styles.dropdown}
         >
           {loading ? (
-            <div style={{
-              padding: '12px',
-              textAlign: 'center',
-              color: 'var(--text-secondary)',
-              fontSize: '0.9rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px'
-            }}>
-              <span style={{ 
-                display: 'inline-block',
-                width: '12px',
-                height: '12px',
-                border: '2px solid #ddd',
-                borderTop: '2px solid #666',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite'
-              }} />
+            <div className={styles.loading}>
+              <span className={styles.spinner} />
               Loading suggestions...
             </div>
           ) : suggestions.length > 0 ? (
@@ -182,27 +142,14 @@ function Autocomplete({
               <div
                 key={suggestion}
                 onClick={() => handleSuggestionClick(suggestion)}
-                style={{
-                  padding: '8px 12px',
-                  cursor: 'pointer',
-                  backgroundColor: index === selectedIndex ? 'var(--bg-tertiary)' : 'var(--bg-secondary)',
-                  borderBottom: index < suggestions.length - 1 ? `1px solid var(--border-color)` : 'none',
-                  fontSize: '0.9rem',
-                  color: 'var(--text-primary)',
-                  transition: 'background-color 0.2s ease'
-                }}
+                className={`${styles.suggestion} ${index === selectedIndex ? styles.selected : ''}`}
                 onMouseEnter={() => setSelectedIndex(index)}
               >
                 {suggestion}
               </div>
             ))
           ) : (
-            <div style={{
-              padding: '12px',
-              textAlign: 'center',
-              color: 'var(--text-secondary)',
-              fontSize: '0.9rem'
-            }}>
+            <div className={styles.empty}>
               No suggestions found
             </div>
           )}

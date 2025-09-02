@@ -2,6 +2,7 @@
 import React from 'react';
 import { InfoWindow } from '@react-google-maps/api';
 import ReportCarForm from './ReportCarForm';
+import styles from './FormMarker.module.css';
 
 interface FormMarkerProps {
   position: { lat: number; lng: number };
@@ -21,12 +22,7 @@ export function FormMarker({ position, onCurrentLocation, onClose }: FormMarkerP
         headerDisabled: true
       }}
     >
-      <div style={{
-        padding: '0',
-        margin: '0',
-        minWidth: '400px',
-        maxWidth: '500px'
-      }}>
+      <div className={styles.container}>
         <ReportCarForm
           selectedLocation={position}
           onCurrentLocation={onCurrentLocation}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTheme } from './ThemeProvider';
+import styles from './ThemeSwitcher.module.css';
 
 export function ThemeSwitcher() {
   const { theme, toggleTheme } = useTheme();
@@ -7,20 +8,7 @@ export function ThemeSwitcher() {
   return (
     <button
       onClick={toggleTheme}
-      style={{
-        padding: '8px',
-        borderRadius: '50%',
-        border: 'none',
-        background: 'transparent',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '40px',
-        height: '40px',
-        transition: 'all 0.2s ease',
-        color: 'var(--text-primary)',
-      }}
+      className={styles.button}
       title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}
     >
       {theme === 'light' ? '🌙' : '☀️'}
