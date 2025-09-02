@@ -125,9 +125,12 @@ function Autocomplete({
           width: '100%',
           padding: 8,
           borderRadius: 6,
-          border: '1px solid #e2e8f0',
+          border: `1px solid var(--border-color)`,
           fontSize: '1rem',
           boxSizing: 'border-box',
+          backgroundColor: 'var(--bg-secondary)',
+          color: 'var(--text-primary)',
+          transition: 'border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease',
           ...style
         }}
         autoComplete="off"
@@ -142,13 +145,13 @@ function Autocomplete({
             left: 0,
             right: 0,
             zIndex: 1000, // High z-index to ensure it's on top
-            background: '#fff',
-            border: '1px solid #e2e8f0',
+            background: 'var(--bg-secondary)',
+            border: `1px solid var(--border-color)`,
             borderTop: 'none',
             borderRadius: '0 0 6px 6px',
             maxHeight: '200px',
             overflowY: 'auto',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            boxShadow: `0 4px 12px var(--shadow-color)`,
             marginTop: '1px'
           }}
         >
@@ -156,7 +159,7 @@ function Autocomplete({
             <div style={{
               padding: '12px',
               textAlign: 'center',
-              color: '#666',
+              color: 'var(--text-secondary)',
               fontSize: '0.9rem',
               display: 'flex',
               alignItems: 'center',
@@ -182,9 +185,11 @@ function Autocomplete({
                 style={{
                   padding: '8px 12px',
                   cursor: 'pointer',
-                  backgroundColor: index === selectedIndex ? '#f7fafc' : '#fff',
-                  borderBottom: index < suggestions.length - 1 ? '1px solid #f0f0f0' : 'none',
-                  fontSize: '0.9rem'
+                  backgroundColor: index === selectedIndex ? 'var(--bg-tertiary)' : 'var(--bg-secondary)',
+                  borderBottom: index < suggestions.length - 1 ? `1px solid var(--border-color)` : 'none',
+                  fontSize: '0.9rem',
+                  color: 'var(--text-primary)',
+                  transition: 'background-color 0.2s ease'
                 }}
                 onMouseEnter={() => setSelectedIndex(index)}
               >
@@ -195,7 +200,7 @@ function Autocomplete({
             <div style={{
               padding: '12px',
               textAlign: 'center',
-              color: '#666',
+              color: 'var(--text-secondary)',
               fontSize: '0.9rem'
             }}>
               No suggestions found
