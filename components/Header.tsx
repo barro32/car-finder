@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ThemeSwitcher } from './ThemeSwitcher';
+import styles from './Header.module.css';
 
 interface HeaderProps {
   isGettingLocation: boolean;
@@ -11,74 +12,36 @@ interface HeaderProps {
 
 function Header({ isGettingLocation, mapCenter, showCenterMarker, onStartReportFlow }: HeaderProps) {
   return (
-    <header style={{ 
-      position: 'absolute', 
-      top: 0, 
-      left: 0, 
-      right: 0, 
-      zIndex: 1000, 
-      background: 'rgba(255, 255, 255, 0.95)', 
-      backdropFilter: 'blur(10px)',
-      borderBottom: '1px solid var(--border-color)',
-      padding: '1rem 2rem',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      backgroundColor: 'var(--bg-secondary)',
-      color: 'var(--text-primary)',
-      transition: 'background-color 0.3s ease, color 0.3s ease'
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <Link href="/" style={{ textDecoration: 'none' }}>
-          <h1 style={{ margin: 0, fontSize: '2rem', color: 'var(--text-primary)', letterSpacing: '1px', cursor: 'pointer' }}>Car Finder</h1>
-        </Link>
-        <Link href="/lost-cars" style={{ textDecoration: 'none', color: 'var(--text-accent)', fontWeight: 500 }}>
-          Lost Cars
-        </Link>
-        {isGettingLocation && (
-          <span style={{ 
-            fontSize: '0.9rem', 
-            color: 'var(--text-accent)', 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '0.5rem' 
-          }}>
-            📍 Getting your location...
-          </span>
-        )}
-        {mapCenter && !isGettingLocation && (
-          <span style={{ 
-            fontSize: '0.8rem', 
-            color: '#48bb78', 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '0.3rem' 
-          }}>
-            📍 Located
-          </span>
-        )}
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <ThemeSwitcher />
-        <button 
-          onClick={onStartReportFlow}
-          style={{
-            padding: '12px 24px',
-            borderRadius: 8,
-            background: showCenterMarker ? 'var(--button-secondary-bg)' : 'var(--button-bg)',
-            color: '#fff',
-            border: 'none',
-            fontWeight: 600,
-            fontSize: '1rem',
-            cursor: 'pointer',
-            boxShadow: '0 2px 8px var(--shadow-color)',
-            transition: 'all 0.2s'
-          }}
-          onMouseOver={(e) => (e.target as HTMLButtonElement).style.background = showCenterMarker ? 'var(--button-secondary-hover)' : 'var(--button-hover)'}
-          onMouseOut={(e) => (e.target as HTMLButtonElement).style.background = showCenterMarker ? 'var(--button-secondary-bg)' : 'var(--button-bg)'}
-        >
-          {showCenterMarker ? '📍 Position Pin' : 'Report Car'}
-        </button>
+    <header className={styles.header}>
+      <div className={styles.headerContent}>
+        <div className={styles.logoSection}>
+          <Link href="/" className={styles.logoLink}>
+            <h1 className={styles.logo}>Car Finder</h1>
+          </Link>
+          <Link href="/lost-cars" className={styles.navLink}>
+            Lost Cars
+          </Link>
+          {isGettingLocation && (
+            <span className={styles.locationStatus}>
+              📍 Getting your location...
+            </span>
+          )}
+          {mapCenter && !isGettingLocation && (
+            <span className={styles.locationInfo}>
+              📍 Located
+            </span>
+          )}
+        </div>
+        
+        <div className={styles.actionsSection}>
+          <ThemeSwitcher />
+          <button 
+            onClick={onStartReportFlow}
+            className={`${styles.reportButton} ${showCenterMarker ? styles.reportButtonSecondary : ''}`}
+          >
+            {showCenterMarker ? '📍 Position Pin' : 'Report Car'}
+          </button>
+        </div>
       </div>
     </header>
   );
