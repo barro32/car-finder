@@ -93,3 +93,99 @@ body {
     transform: rotate(360deg);
   }
 }
+
+/* Google Maps InfoWindow overrides */
+.gm-style-iw-chr,
+.gm-style-iw-ch,
+.gm-style-iw-d {
+  overflow: hidden !important;
+}
+
+.gm-style-iw-chr::after,
+.gm-style-iw-ch::after {
+  display: none !important;
+}
+
+.gm-style-iw {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.gm-style-iw-c {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.gm-ui-hover-effect {
+  display: none !important;
+}
+
+/* Car InfoWindow styles */
+.car-info-window {
+  padding: 12px;
+  font-family: Arial, sans-serif;
+  background-color: var(--bg-secondary, #ffffff);
+  color: var(--text-primary, #000000);
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  box-shadow: 0 2px 8px var(--shadow-color, rgba(0, 0, 0, 0.1));
+  min-width: 250px;
+  position: relative;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.car-info-close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--text-secondary, #4a5568);
+  padding: 2px 6px;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.car-info-close-btn:hover {
+  background-color: var(--bg-tertiary, #f9f9f9);
+  color: var(--text-primary, #1a202c);
+}
+
+.car-info-title {
+  margin: 0 0 10px 0;
+  color: var(--text-primary, #1a202c);
+  font-size: 16px;
+  font-weight: bold;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  padding-bottom: 8px;
+  padding-right: 30px;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.car-info-details {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.car-info-item {
+  margin: 6px 0;
+  color: var(--text-secondary, #4a5568);
+  transition: color 0.3s ease;
+}
+
+.car-info-location {
+  margin: 6px 0;
+  color: var(--text-secondary, #4a5568);
+  font-size: 12px;
+  transition: color 0.3s ease;
+}
