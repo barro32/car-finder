@@ -18,6 +18,7 @@ type MapViewProps = {
   onCloseForm?: () => void;
   showCenterMarker?: boolean;
   onCenterMarkerConfirm?: (location: { lat: number; lng: number }) => void;
+  selectedCar?: Car | null;
 };
 
 
@@ -28,7 +29,8 @@ function MapView({
   onCurrentLocation,
   onCloseForm,
   showCenterMarker,
-  onCenterMarkerConfirm
+  onCenterMarkerConfirm,
+  selectedCar
 }: MapViewProps) {
   const mapRef = useRef<google.maps.Map | null>(null);
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | null>(null);
@@ -40,8 +42,14 @@ function MapView({
   // Center the map when propCenter changes
   useEffect(() => {
     if (mapRef.current && propCenter) {
-      mapRef.current.panTo(propCenter);
-      mapRef.current.setZoom(16); // Zoom in when centering on current location
+      // Small delay to ensure map is fully loaded
+      setTimeout(() => {
+        if (mapRef.current) {
+          mapRef.current.panTo(propCenter);
+          mapRef.current.setZoom(16); // Zoom in when centering on current location
+          console.log('Map centered on:', propCenter);
+        }
+      }, 100);
     }
   }, [propCenter]);
 
@@ -123,6 +131,24 @@ function MapView({
             label={car.licensePlate}
           />
         ))}
+
+        {/* Selected car marker - highlighted */}
+        {selectedCar && (
+          <Marker
+            position={selectedCar.location}
+            icon={{
+              url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="20" cy="20" r="18" fill="#ff4444" stroke="#ffffff" stroke-width="3"/>
+                  <text x="20" y="25" text-anchor="middle" fill="#ffffff" font-family="Arial" font-size="12" font-weight="bold">!</text>
+                </svg>
+              `),
+              scaledSize: new google.maps.Size(40, 40),
+              anchor: new google.maps.Point(20, 40)
+            }}
+            title={`${selectedCar.make} ${selectedCar.model} - ${selectedCar.licensePlate}`}
+          />
+        )}
         
         {/* Custom form marker */}
         {selectedLocation && showFormMarker && (

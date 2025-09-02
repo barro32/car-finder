@@ -1,18 +1,53 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import MapView from '../components/MapView';
 import Header from '../components/Header';
 import { useCurrentLocation } from '../hooks/useCurrentLocation';
+import { useCars } from '../hooks/useCars';
 import { getOffsetLocation } from '../utils/constants';
+import { Car } from '../types/car';
 
 export default function Home() {
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showCenterMarker, setShowCenterMarker] = useState(false);
+  const [selectedCar, setSelectedCar] = useState<Car | null>(null);
+  const [mapCenterOverride, setMapCenterOverride] = useState<{ lat: number; lng: number } | null>(null);
   
-  const { mapCenter, setMapCenter, isGettingLocation } = useCurrentLocation();
+  const { mapCenter: currentLocation, setMapCenter, isGettingLocation } = useCurrentLocation();
+  const { data } = useCars();
+  const searchParams = useSearchParams();
+
+  // Handle carId from URL parameters
+  useEffect(() => {
+    const carId = searchParams.get('carId');
+    if (carId && data?.cars) {
+      const car = data.cars.find((c: Car) => c.id === parseInt(carId));
+      if (car) {
+        setSelectedCar(car);
+        // Center map on the car's location with offset
+        const offsetLocation = getOffsetLocation(car.location);
+        setMapCenterOverride(offsetLocation);
+        console.log('Centering map on car:', car.id, 'at location:', offsetLocation);
+        
+        // Also update the current location hook so it stays in sync
+        setMapCenter(offsetLocation);
+        
+        // Scroll to top to ensure map is visible
+        window.scrollTo(0, 0);
+      }
+    } else {
+      // Clear override when no carId
+      setMapCenterOverride(null);
+      setSelectedCar(null);
+    }
+  }, [searchParams, data, setMapCenter]);
+
+  // Use override center if available, otherwise use current location
+  const effectiveMapCenter = mapCenterOverride || currentLocation;
 
   const handleCurrentLocation = (location: { lat: number; lng: number }) => {
     setSelectedLocation(location);
@@ -33,6 +68,8 @@ export default function Home() {
   const startReportFlow = () => {
     setShowCenterMarker(true);
     setSelectedLocation(null); // Reset any previous selection
+    setSelectedCar(null); // Clear selected car when starting report flow
+    setMapCenterOverride(null); // Clear map center override
   };
 
   const handleCenterMarkerConfirm = (location: { lat: number; lng: number }) => {
@@ -62,18 +99,19 @@ export default function Home() {
       {/* Full screen map */}
       <MapView 
         selectedLocation={selectedLocation}
-        center={mapCenter}
+        center={effectiveMapCenter}
         showFormMarker={isModalOpen}
         onCurrentLocation={handleCurrentLocation}
         onCloseForm={closeModal}
         showCenterMarker={showCenterMarker}
         onCenterMarkerConfirm={handleCenterMarkerConfirm}
+        selectedCar={selectedCar}
       />
       
       {/* Floating header */}
       <Header 
         isGettingLocation={isGettingLocation}
-        mapCenter={mapCenter}
+        mapCenter={effectiveMapCenter}
         showCenterMarker={showCenterMarker}
         onStartReportFlow={startReportFlow}
       />
