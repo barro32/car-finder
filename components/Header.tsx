@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 interface HeaderProps {
   isGettingLocation: boolean;
@@ -24,7 +25,12 @@ function Header({ isGettingLocation, mapCenter, showCenterMarker, onStartReportF
       alignItems: 'center'
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <h1 style={{ margin: 0, fontSize: '2rem', color: '#1a202c', letterSpacing: '1px' }}>Car Finder</h1>
+        <Link href="/" style={{ textDecoration: 'none' }}>
+          <h1 style={{ margin: 0, fontSize: '2rem', color: '#1a202c', letterSpacing: '1px', cursor: 'pointer' }}>Car Finder</h1>
+        </Link>
+        <Link href="/lost-cars" style={{ textDecoration: 'none', color: '#3182ce', fontWeight: 500 }}>
+          Lost Cars
+        </Link>
         {isGettingLocation && (
           <span style={{ 
             fontSize: '0.9rem', 
