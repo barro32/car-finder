@@ -156,18 +156,20 @@ function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMa
       display: 'flex', 
       flexDirection: 'column', 
       gap: 20, // Increased gap for autocomplete dropdowns
-      background: isInMapMarker ? '#fff' : 'transparent',
+      background: isInMapMarker ? 'var(--bg-secondary)' : 'transparent',
       padding: isInMapMarker ? '1.5rem' : '0',
       borderRadius: isInMapMarker ? '12px' : '0',
-      boxShadow: isInMapMarker ? '0 4px 20px rgba(0,0,0,0.1)' : 'none',
+      boxShadow: isInMapMarker ? `0 4px 20px var(--shadow-color)` : 'none',
       minWidth: isInMapMarker ? '400px' : 'auto', // Increased width
-      position: 'relative'
+      position: 'relative',
+      color: 'var(--text-primary)',
+      transition: 'background-color 0.3s ease, color 0.3s ease'
     }}>
       <h2 style={{ 
         margin: 0, 
         marginBottom: 12, 
         fontSize: isInMapMarker ? '1.1rem' : '1.25rem', 
-        color: '#2d3748',
+        color: 'var(--text-primary)',
         textAlign: isInMapMarker ? 'center' : 'left'
       }}>Report Stolen Car</h2>
       
@@ -223,9 +225,12 @@ function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMa
             flex: 1, 
             padding: 8, 
             borderRadius: 6, 
-            border: '1px solid #e2e8f0',
+            border: `1px solid var(--border-color)`,
             fontSize: '1rem',
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
+            backgroundColor: 'var(--bg-secondary)',
+            color: 'var(--text-primary)',
+            transition: 'border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease'
           }} 
         />
       </div>
@@ -240,7 +245,7 @@ function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMa
               flex: 1,
               padding: '10px 12px', 
               borderRadius: 6, 
-              background: gettingLocation ? '#cbd5e0' : '#48bb78', 
+              background: gettingLocation ? 'var(--border-color)' : 'var(--button-secondary-bg)', 
               color: '#fff', 
               border: 'none', 
               fontWeight: 500, 
@@ -280,10 +285,10 @@ function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMa
         <div style={{ 
           padding: '8px 12px', 
           borderRadius: 6, 
-          background: '#f0fff4', 
-          border: '1px solid #9ae6b4',
+          background: 'var(--bg-tertiary)', 
+          border: `1px solid var(--border-color)`,
           fontSize: '0.85rem',
-          color: '#2f855a',
+          color: 'var(--text-secondary)',
           textAlign: 'center',
           marginBottom: '8px'
         }}>
@@ -298,7 +303,7 @@ function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMa
           marginTop: 16, 
           padding: '12px 0', 
           borderRadius: 6, 
-          background: submitCarMutation.isPending ? '#cbd5e0' : '#3182ce', 
+          background: submitCarMutation.isPending ? 'var(--border-color)' : 'var(--button-bg)', 
           color: '#fff', 
           border: 'none', 
           fontWeight: 600, 

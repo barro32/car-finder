@@ -1,11 +1,50 @@
+/* CSS Variables for theming */
+:root {
+  /* Light theme */
+  --bg-primary: #fafafa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f9f9f9;
+  --text-primary: #1a202c;
+  --text-secondary: #4a5568;
+  --text-accent: #3182ce;
+  --border-color: #e2e8f0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --button-bg: #3182ce;
+  --button-hover: #2c5aa0;
+  --button-secondary-bg: #48bb78;
+  --button-secondary-hover: #38a169;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --bg-primary: #1a202c;
+  --bg-secondary: #2d3748;
+  --bg-tertiary: #4a5568;
+  --text-primary: #f7fafc;
+  --text-secondary: #e2e8f0;
+  --text-accent: #63b3ed;
+  --border-color: #4a5568;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --button-bg: #3182ce;
+  --button-hover: #2c5aa0;
+  --button-secondary-bg: #48bb78;
+  --button-secondary-hover: #38a169;
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
   height: 100%;
   font-family: Arial, sans-serif;
-  background: #fafafa;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   overflow: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 @keyframes modalSlideIn {
