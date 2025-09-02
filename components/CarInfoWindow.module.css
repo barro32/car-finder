@@ -1,0 +1,66 @@
+/* CarInfoWindow.module.css */
+.infoWindow {
+  padding: 12px;
+  font-family: Arial, sans-serif;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  min-width: 250px;
+  position: relative;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 2px 6px;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.closeBtn:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.title {
+  margin: 0 0 10px 0;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: bold;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 8px;
+  padding-right: 30px;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.details {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.item {
+  margin: 6px 0;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+.location {
+  margin: 6px 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  transition: color 0.3s ease;
+}

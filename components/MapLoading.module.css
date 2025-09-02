@@ -1,0 +1,21 @@
+/* MapLoading.module.css */
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.containerError {
+  color: #e53e3e;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .container {
+    font-size: 1rem;
+    padding: 1rem;
+  }
+}

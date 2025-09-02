@@ -1,5 +1,6 @@
 "use client";
 import React from 'react';
+import styles from './CenterMarkerOverlay.module.css';
 
 interface CenterMarkerOverlayProps {
   mapCenter: { lat: number; lng: number } | null;
@@ -10,51 +11,27 @@ export function CenterMarkerOverlay({ mapCenter, onConfirm }: CenterMarkerOverla
   return (
     <>
       {/* Center pin */}
-      <div style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -100%)',
-        zIndex: 600,
-        pointerEvents: 'none'
-      }}>
-        <div style={{
-          fontSize: '2.5rem',
-          textShadow: '0 2px 8px rgba(0,0,0,0.3)',
-          animation: 'pinBounce 1s ease-out'
-        }}>📍</div>
+      <div className={styles.centerPin}>
+        <div className={styles.pinIcon}>📍</div>
       </div>
 
       {/* Confirmation button */}
-      <div style={{
-        position: 'absolute',
-        bottom: '120px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 600
-      }}>
+      <div className={styles.confirmButtonContainer}>
         <button
           onClick={() => {
             if (mapCenter && onConfirm) {
               onConfirm(mapCenter);
             }
           }}
-          className="center-marker-confirm-btn"
+          className={styles.confirmButton}
         >
           📍 Confirm Location
         </button>
       </div>
 
       {/* Instruction overlay */}
-      <div style={{
-        position: 'absolute',
-        top: '120px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 500,
-        pointerEvents: 'none'
-      }}>
-        <div className="center-marker-instruction">
+      <div className={styles.instructionContainer}>
+        <div className={styles.instruction}>
           <h3>Position the Pin</h3>
           <p>Move the map to position the pin exactly where the car was seen</p>
         </div>
