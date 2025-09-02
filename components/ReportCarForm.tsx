@@ -5,6 +5,7 @@ import { useToast } from '../hooks/useToast';
 import Toast from './Toast';
 import Autocomplete from './Autocomplete';
 import { CarDataService } from '../services/carDataService';
+import styles from './ReportCarForm.module.css';
 
 function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMarker }: { 
   selectedLocation: Location, 
@@ -152,191 +153,111 @@ function ReportCarForm({ selectedLocation, onCurrentLocation, onClose, isInMapMa
         />
       ))}
 
-      <form onSubmit={handleSubmit} style={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      gap: 20, // Increased gap for autocomplete dropdowns
-      background: isInMapMarker ? 'var(--bg-secondary)' : 'transparent',
-      padding: isInMapMarker ? '1.5rem' : '0',
-      borderRadius: isInMapMarker ? '12px' : '0',
-      boxShadow: isInMapMarker ? `0 4px 20px var(--shadow-color)` : 'none',
-      minWidth: isInMapMarker ? '400px' : 'auto', // Increased width
-      position: 'relative',
-      color: 'var(--text-primary)',
-      transition: 'background-color 0.3s ease, color 0.3s ease'
-    }}>
-      <h2 style={{ 
-        margin: 0, 
-        marginBottom: 12, 
-        fontSize: isInMapMarker ? '1.1rem' : '1.25rem', 
-        color: 'var(--text-primary)',
-        textAlign: isInMapMarker ? 'center' : 'left'
-      }}>Report Stolen Car</h2>
-      
-      {/* Make field */}
-      <div style={{ position: 'relative', zIndex: 4 }}>
-        <Autocomplete
-          name="make"
-          placeholder="Car Make (e.g., Toyota, Honda, BMW)"
-          value={form.make}
-          onChange={handleMakeChange}
-          onSearch={searchMakes}
-          required
-        />
-      </div>
-
-      {/* Model field */}
-      <div style={{ position: 'relative', zIndex: 3 }}>
-        <Autocomplete
-          name="model"
-          placeholder={selectedMakeId ? "Model (e.g., Camry, Civic)" : "Select make first"}
-          value={form.model}
-          onChange={handleModelChange}
-          onSearch={searchModels}
-          required
-        />
-      </div>
-
-      {/* Color and License plate row */}
-      <div style={{ 
-        display: 'flex', 
-        gap: 12, 
-        position: 'relative', 
-        zIndex: 2,
-        flexDirection: isInMapMarker ? 'column' : 'row' // Stack vertically in modal for more space
-      }}>
-        <div style={{ flex: 1, position: 'relative' }}>
+      <form 
+        onSubmit={handleSubmit} 
+        className={`${styles.container} ${!isInMapMarker ? styles.containerTransparent : ''}`}
+      >
+        <h2 className={`${styles.title} ${!isInMapMarker ? styles.titleLarge : ''}`}>
+          Report Stolen Car
+        </h2>
+        
+        {/* Make field */}
+        <div className={styles.fieldGroup}>
           <Autocomplete
-            name="color"
-            placeholder="Color"
-            value={form.color}
-            onChange={handleColorChange}
-            onSearch={searchColors}
+            name="make"
+            placeholder="Car Make (e.g., Toyota, Honda, BMW)"
+            value={form.make}
+            onChange={handleMakeChange}
+            onSearch={searchMakes}
             required
           />
         </div>
-        <input 
-          name="licensePlate" 
-          placeholder="License Plate" 
-          value={form.licensePlate} 
-          onChange={handleChange} 
-          required 
-          style={{ 
-            flex: 1, 
-            padding: 8, 
-            borderRadius: 6, 
-            border: `1px solid var(--border-color)`,
-            fontSize: '1rem',
-            boxSizing: 'border-box',
-            backgroundColor: 'var(--bg-secondary)',
-            color: 'var(--text-primary)',
-            transition: 'border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease'
-          }} 
-        />
-      </div>
-      
-      {!isInMapMarker && (
-        <div style={{ display: 'flex', gap: 8, marginTop: 8, position: 'relative', zIndex: 1 }}>
-          <button 
-            type="button" 
-            onClick={handleCurrentLocation}
-            disabled={gettingLocation}
-            style={{ 
-              flex: 1,
-              padding: '10px 12px', 
-              borderRadius: 6, 
-              background: gettingLocation ? 'var(--border-color)' : 'var(--button-secondary-bg)', 
-              color: '#fff', 
-              border: 'none', 
-              fontWeight: 500, 
-              fontSize: '0.9rem', 
-              cursor: gettingLocation ? 'not-allowed' : 'pointer',
-              transition: 'background 0.2s',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 6
-            }}
-          >
-            {gettingLocation ? '📍 Getting...' : '📍 Use Current Location'}
-          </button>
-          <button 
-            type="button" 
-            onClick={onClose} 
-            style={{ 
-              flex: 1,
-              padding: '10px 12px', 
-              borderRadius: 6, 
-              background: '#e53e3e', 
-              color: '#fff', 
-              border: 'none', 
-              fontWeight: 500, 
-              fontSize: '0.9rem', 
-              cursor: 'pointer',
-              transition: 'background 0.2s'
-            }}
-          >
-            ✕ Choose Different Location
-          </button>
+
+        {/* Model field */}
+        <div className={styles.fieldGroup}>
+          <Autocomplete
+            name="model"
+            placeholder={selectedMakeId ? "Model (e.g., Camry, Civic)" : "Select make first"}
+            value={form.model}
+            onChange={handleModelChange}
+            onSearch={searchModels}
+            required
+          />
         </div>
-      )}
-      
-      {isInMapMarker && (
-        <div style={{ 
-          padding: '8px 12px', 
-          borderRadius: 6, 
-          background: 'var(--bg-tertiary)', 
-          border: `1px solid var(--border-color)`,
-          fontSize: '0.85rem',
-          color: 'var(--text-secondary)',
-          textAlign: 'center',
-          marginBottom: '8px'
-        }}>
-          📍 Location: {selectedLocation?.lat.toFixed(5)}, {selectedLocation?.lng.toFixed(5)}
+
+        {/* Color and License plate row */}
+        <div className={`${styles.fieldRow} ${!isInMapMarker ? styles.fieldRowDesktop : ''}`}>
+          <div className={styles.fieldGroup}>
+            <Autocomplete
+              name="color"
+              placeholder="Color"
+              value={form.color}
+              onChange={handleColorChange}
+              onSearch={searchColors}
+              required
+            />
+          </div>
+          <input 
+            name="licensePlate" 
+            placeholder="License Plate" 
+            value={form.licensePlate} 
+            onChange={handleChange} 
+            required 
+            className={styles.input}
+          />
         </div>
-      )}
-      
-      <button 
-        type="submit" 
-        disabled={submitCarMutation.isPending}
-        style={{ 
-          marginTop: 16, 
-          padding: '12px 0', 
-          borderRadius: 6, 
-          background: submitCarMutation.isPending ? 'var(--border-color)' : 'var(--button-bg)', 
-          color: '#fff', 
-          border: 'none', 
-          fontWeight: 600, 
-          fontSize: '1rem', 
-          cursor: submitCarMutation.isPending ? 'not-allowed' : 'pointer', 
-          transition: 'background 0.2s',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px',
-          position: 'relative',
-          zIndex: 1
-        }}
-      >
-        {submitCarMutation.isPending ? (
-          <>
-            <span style={{ 
-              display: 'inline-block',
-              width: '16px',
-              height: '16px',
-              border: '2px solid #fff',
-              borderTop: '2px solid transparent',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite'
-            }} />
-            Submitting...
-          </>
-        ) : (
-          'Report'
+        
+        {!isInMapMarker && (
+          <div className={styles.buttonRow}>
+            <button 
+              type="button" 
+              onClick={handleCurrentLocation}
+              disabled={gettingLocation}
+              className={`${styles.button} ${gettingLocation ? styles.buttonDisabled : ''}`}
+            >
+              {gettingLocation ? '📍 Getting...' : '📍 Use Current Location'}
+            </button>
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className={`${styles.button} ${styles.buttonCancel}`}
+            >
+              ✕ Choose Different Location
+            </button>
+          </div>
         )}
-      </button>
-      {status && <div style={{ marginTop: 8, color: status.includes('success') ? 'green' : 'red', fontSize: '0.9rem', textAlign: 'center' }}>{status}</div>}
-    </form>
+        
+        {isInMapMarker && (
+          <div className={styles.locationInfo}>
+            📍 Location: {selectedLocation?.lat.toFixed(5)}, {selectedLocation?.lng.toFixed(5)}
+          </div>
+        )}
+        
+        <button 
+          type="submit" 
+          disabled={submitCarMutation.isPending}
+          className={`${styles.button} ${styles.submitButton} ${submitCarMutation.isPending ? styles.buttonDisabled : ''}`}
+        >
+          {submitCarMutation.isPending ? (
+            <>
+              <span className={styles.spinner} />
+              Submitting...
+            </>
+          ) : (
+            'Report'
+          )}
+        </button>
+        
+        {status && (
+          <div className={`${styles.status} ${
+            status.includes('success') ? styles.statusSuccess :
+            status.includes('error') || status.includes('Failed') ? styles.statusError :
+            styles.statusInfo
+          }`}>
+            {status}
+          </div>
+        )}
+      </form>
     </>
   );
 }
